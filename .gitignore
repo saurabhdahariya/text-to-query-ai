@@ -131,3 +131,4 @@ Dockerfile.local
 *.tfstate
 *.tfstate.*
 .terraform/
+DEPLOYMENT_SUCCESS.md

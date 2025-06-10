@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
-require('dotenv').config({ path: '.env' });
+require('dotenv').config({ path: __dirname + '/.env' });
 console.log('Environment loaded - OpenAI API Key:', process.env.OPENAI_API_KEY ? 'Present' : 'Missing');
 console.log('OpenAI Base URL:', process.env.OPENAI_BASE_URL);
 
