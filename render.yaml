@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: text-to-sql-app
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build && cd server && npm install
+    startCommand: cd server && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: OPENAI_BASE_URL
+        value: https://api.openai.com/v1
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      # REQUIRED: Add these in Render dashboard environment variables:
+      # OPENAI_API_KEY - Your OpenAI API key from https://platform.openai.com/api-keys
+      # SESSION_SECRET - A secure random string (use crypto.randomBytes(64).toString('hex'))
+      # FRONTEND_URL - Your Render app URL (e.g., https://your-app-name.onrender.com)

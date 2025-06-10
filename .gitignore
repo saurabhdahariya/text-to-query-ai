@@ -1,0 +1,133 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+server/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+/coverage
+.nyc_output
+
+# Production builds
+/build
+/dist
+server/build
+server/dist
+
+# Environment variables (CRITICAL - PROTECTS ALL CREDENTIALS)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+.env.development
+.env.test
+server/.env
+server/.env.local
+server/.env.production
+server/.env.development
+server/.env.test
+
+# API Keys and Secrets (EXTRA PROTECTION)
+**/config/secrets.js
+**/config/keys.js
+**/*secret*
+**/*key*
+**/*credential*
+**/*password*
+**/secrets/
+**/keys/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.cert
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Temporary folders
+tmp/
+temp/
+.cache
+.parcel-cache
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Output of 'npm pack'
+*.tgz
+*.tar.gz
+
+# Backup files
+*.bak
+*.backup
+
+# Local development
+.local
+
+# Deployment files
+deploy/
+deployment/
+
+# Docker
+.dockerignore
+Dockerfile.local
+
+# Cloud provider files
+.aws/
+.gcloud/
+.azure/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
