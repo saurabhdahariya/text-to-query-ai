@@ -20,6 +20,7 @@ import { ThemeToggle } from './theme-toggle';
 import DatabaseSidebar from './DatabaseSidebar';
 import QueryResultsTable from './QueryResultsTable';
 import { sqlAPI } from '../services/api';
+import { getAPIURL } from '../utils/apiConfig';
 
 const QueryInterface = ({ 
   connectionData, 
@@ -74,7 +75,7 @@ const QueryInterface = ({
 
       if (isDemoMode) {
         // Use demo API for demo mode
-        const demoResponse = await fetch('http://localhost:5000/api/demo/query', {
+        const demoResponse = await fetch(getAPIURL('demo/query'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -142,7 +143,7 @@ const QueryInterface = ({
         errorMessage = 'OpenAI API key not configured. Please set up your OpenAI API key in the backend configuration.';
         // Try demo fallback for OpenAI issues
         try {
-          const demoResponse = await fetch('http://localhost:5000/api/demo/query', {
+          const demoResponse = await fetch(getAPIURL('demo/query'), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

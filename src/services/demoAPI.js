@@ -1,4 +1,6 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+import { getAPIBaseURL } from '../utils/apiConfig';
+
+const API_BASE_URL = getAPIBaseURL();
 
 class DemoAPIError extends Error {
   constructor(message, status, details) {

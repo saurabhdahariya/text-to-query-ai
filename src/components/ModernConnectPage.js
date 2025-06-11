@@ -8,6 +8,7 @@ import { Badge } from './ui/badge';
 import { Label } from './ui/label';
 import { Select, SelectItem } from './ui/select';
 import { ThemeToggle } from './theme-toggle';
+import { getAPIURL } from '../utils/apiConfig';
 import {
   ArrowLeft,
   Database,
@@ -18,7 +19,6 @@ import {
   Eye,
   EyeOff,
   Server,
-
   Globe
 } from 'lucide-react';
 
@@ -97,7 +97,7 @@ const ModernConnectPage = ({ onBack, onConnect }) => {
         dbType: formData.type
       });
 
-      const response = await fetch('http://localhost:5000/api/database/connect', {
+      const response = await fetch(getAPIURL('database/connect'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

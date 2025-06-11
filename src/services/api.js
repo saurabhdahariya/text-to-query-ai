@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { getAPIBaseURL, getHealthURL } from '../utils/apiConfig';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: getAPIBaseURL(),
   timeout: 30000,
   withCredentials: true, // Important for session cookies
   headers: {
@@ -127,8 +128,11 @@ export const sqlAPI = {
 // Health check
 export const healthCheck = async () => {
   try {
-    const response = await api.get('/health');
-    return response.data;
+    const response = await fetch(getHealthURL());
+    if (!response.ok) {
+      throw new Error('Health check failed');
+    }
+    return await response.json();
   } catch (error) {
     throw new Error('Backend server is not responding');
   }

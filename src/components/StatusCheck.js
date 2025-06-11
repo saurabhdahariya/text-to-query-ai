@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { getHealthURL } from '../utils/apiConfig';
 
 const StatusCheck = () => {
   const [backendStatus, setBackendStatus] = useState('checking');
@@ -10,7 +11,7 @@ const StatusCheck = () => {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const response = await fetch('http://localhost:5000/health');
+        const response = await fetch(getHealthURL());
         if (response.ok) {
           setBackendStatus('ok');
         } else {

@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
+const path = require('path');
 require('dotenv').config({ path: __dirname + '/.env' });
 console.log('Environment loaded - OpenAI API Key:', process.env.OPENAI_API_KEY ? 'Present' : 'Missing');
 console.log('OpenAI Base URL:', process.env.OPENAI_BASE_URL);
@@ -28,12 +29,37 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://text-to-query-ai.vercel.app/',
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // In production, allow the deployed frontend URL
+    if (process.env.NODE_ENV === 'production') {
+      const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        process.env.RENDER_EXTERNAL_URL // Render automatically sets this
+      ].filter(Boolean);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    } else {
+      // In development, allow localhost
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -60,10 +86,24 @@ app.get('/health', (req, res) => {
   });
 });
 
+
+
+// Serve static files from React build (MUST come before API routes for production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../build')));
+}
+
 // API routes
 app.use('/api', openaiSqlRoutes);
 app.use('/api/database', dbRoutes);
 app.use('/api/demo', demoRoutes);
+
+// Serve React app for all non-API routes (MUST come after API routes but before 404)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -82,21 +122,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
+// 404 handler for API routes only (MUST come last)
+app.use('/api/*', (req, res) => {
   res.status(404).json({
-    error: 'Route not found'
+    error: 'API route not found'
   });
-});
-
-//adding for render
-const path = require('path');
-
-// Serve static files from React
-app.use(express.static(path.join(__dirname, '../build')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build/index.html'));
 });
 
 app.listen(PORT, () => {

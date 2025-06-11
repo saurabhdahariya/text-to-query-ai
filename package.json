@@ -29,12 +29,15 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently \"cd server && npm start\" \"npm start\"",
+    "dev": "concurrently \"cd server && npm run dev\" \"npm start\"",
     "server": "cd server && npm start",
+    "server:dev": "cd server && npm run dev",
     "install:server": "cd server && npm install",
     "build:production": "npm run build && npm run install:server",
-    "start:production": "cd server && node server.js",
-    "deploy": "npm run build:production && npm run start:production"
+    "start:production": "cd server && NODE_ENV=production node server.js",
+    "test:production": "node test-production.js",
+    "deploy": "npm run build:production && npm run start:production",
+    "postbuild": "echo 'Frontend build completed successfully'"
   },
   "eslintConfig": {
     "extends": [
