@@ -115,12 +115,28 @@ router.post('/connect', async (req, res) => {
       // Store the actual password separately (encrypted in production)
       req.session.dbPassword = connectionConfig.password;
 
+      console.log('Connection successful - Session stored:', {
+        sessionID: req.sessionID,
+        dbConnection: req.session.dbConnection,
+        hasPassword: !!req.session.dbPassword
+      });
+
+      // Explicitly save the session to ensure it persists
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+        } else {
+          console.log('Session saved successfully');
+        }
+      });
+
       res.json({
         success: true,
         message: 'Database connection successful',
         dbType: connectionConfig.dbType,
         database: connectionConfig.database,
-        host: connectionConfig.host
+        host: connectionConfig.host,
+        sessionID: req.sessionID
       });
 
     } catch (dbError) {
@@ -293,8 +309,16 @@ router.post('/execute', async (req, res) => {
 // GET /api/database/schema - Get database schema information
 router.get('/schema', async (req, res) => {
   try {
+    console.log('Schema request - Session check:', {
+      sessionID: req.sessionID,
+      hasDbConnection: !!req.session.dbConnection,
+      hasDbPassword: !!req.session.dbPassword,
+      sessionData: req.session
+    });
+
     // Check if user has an active database session
     if (!req.session.dbConnection || !req.session.dbPassword) {
+      console.log('Schema request failed - No active session');
       return res.status(401).json({
         error: 'No active database connection. Please connect to a database first.'
       });
@@ -426,16 +450,26 @@ const generateTableInfo = (tables, columns) => {
 
 // GET /api/database/status - Check connection status
 router.get('/status', (req, res) => {
+  console.log('Status check - Session info:', {
+    sessionID: req.sessionID,
+    hasDbConnection: !!req.session.dbConnection,
+    hasDbPassword: !!req.session.dbPassword,
+    sessionKeys: Object.keys(req.session)
+  });
+
   if (req.session.dbConnection) {
     res.json({
       connected: true,
       dbType: req.session.dbConnection.dbType,
       database: req.session.dbConnection.database,
-      host: req.session.dbConnection.host
+      host: req.session.dbConnection.host,
+      sessionID: req.sessionID
     });
   } else {
     res.json({
-      connected: false
+      connected: false,
+      sessionID: req.sessionID,
+      sessionKeys: Object.keys(req.session)
     });
   }
 });
@@ -448,6 +482,23 @@ router.post('/disconnect', (req, res) => {
   res.json({
     success: true,
     message: 'Disconnected from database'
+  });
+});
+
+// GET /api/database/session-test - Test session persistence
+router.get('/session-test', (req, res) => {
+  // Set a test value in session
+  if (!req.session.testValue) {
+    req.session.testValue = Date.now();
+  }
+
+  res.json({
+    sessionID: req.sessionID,
+    testValue: req.session.testValue,
+    sessionKeys: Object.keys(req.session),
+    hasDbConnection: !!req.session.dbConnection,
+    hasDbPassword: !!req.session.dbPassword,
+    cookies: req.headers.cookie
   });
 });
 
